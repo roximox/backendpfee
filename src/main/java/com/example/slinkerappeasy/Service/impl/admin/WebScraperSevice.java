@@ -156,6 +156,7 @@ public class WebScraperSevice  {
             });
         }
 
+
         executor.shutdown();
         while (!executor.isTerminated()) {
             // Attente de la fin de tous les threads
