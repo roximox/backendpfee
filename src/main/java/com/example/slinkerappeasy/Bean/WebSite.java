@@ -1,16 +1,17 @@
 package com.example.slinkerappeasy.Bean;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
-public class WebSite    {
-@Id
-@GeneratedValue
+public class WebSite {
+    @Id
+    @GeneratedValue
     private Long id;
-
     @Column(length = 500)
     private String url;
     @Column(length = 500)
@@ -18,12 +19,13 @@ public class WebSite    {
     @Column(length = 500)
     private String jsonSummary;
     @ManyToOne
-    private StatutWebSite statutWebSite ;
-    @OneToMany
-    private List<Client> clients ;
+    private StatutWebSite statutWebSite;
+    @OneToMany()
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private List<Client> clients;
 
     @ManyToOne
-    private ScrappingLink scrappingLinks ;
+    private ScrappingLink scrappingLinks;
 
     public Long getId() {
         return id;

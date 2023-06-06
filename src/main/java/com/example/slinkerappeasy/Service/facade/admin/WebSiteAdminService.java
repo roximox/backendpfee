@@ -14,4 +14,5 @@ public interface WebSiteAdminService   {
     WebSite findById(Long id);
 
 
+    WebSite findByUrl(String url, String protocol);
 }

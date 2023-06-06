@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
-public class WebSiteAdminServiceImpl  implements WebSiteAdminService {
+public class WebSiteAdminServiceImpl implements WebSiteAdminService {
 
     @Autowired
     private WebSiteDao webSiteDao;
@@ -33,8 +33,8 @@ public class WebSiteAdminServiceImpl  implements WebSiteAdminService {
     }
 
 
-    public int update(WebSite webSite){
-        if (findById(webSite.getId())==null){
+    public int update(WebSite webSite) {
+        if (findById(webSite.getId()) == null) {
             return -1;
         }
         WebSite webSite1 = findById(webSite.getId());
@@ -47,16 +47,19 @@ public class WebSiteAdminServiceImpl  implements WebSiteAdminService {
     }
 
 
-    public List<WebSite> findByStatutWebSiteId(Long id){
+    public List<WebSite> findByStatutWebSiteId(Long id) {
         return webSiteDao.findByStatutWebSiteId(id);
     }
-    public int deleteByStatutWebSiteId(Long id){
+
+    public int deleteByStatutWebSiteId(Long id) {
         return webSiteDao.deleteByStatutWebSiteId(id);
     }
-    public List<WebSite> findByClientsId(Long id){
+
+    public List<WebSite> findByClientsId(Long id) {
         return webSiteDao.findByClientsId(id);
     }
-    public int deleteByClientsId(Long id){
+
+    public int deleteByClientsId(Long id) {
         return webSiteDao.deleteByClientsId(id);
     }
 
@@ -65,13 +68,23 @@ public class WebSiteAdminServiceImpl  implements WebSiteAdminService {
         return webSiteDao.getOne(id);
     }
 
+    @Override
+    public WebSite findByUrl(String url, String protocol) {
+        url = protocol +"//" + url;
+        System.out.println(url);
+        if (webSiteDao.findByUrl(url) == null) {
+            return null;
+        }
+        return webSiteDao.findByUrl(url);
+    }
+
 
     @Autowired
-    private ClientAdminService clientService ;
+    private ClientAdminService clientService;
     @Autowired
-    private StatutWebSiteAdminService statutWebSiteService ;
+    private StatutWebSiteAdminService statutWebSiteService;
     @Autowired
-    private ScrappingLinkAdminService scrappingLinkService ;
+    private ScrappingLinkAdminService scrappingLinkService;
 
 
 }

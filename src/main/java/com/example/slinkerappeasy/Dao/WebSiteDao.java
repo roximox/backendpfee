@@ -9,13 +9,18 @@ import java.util.List;
 
 
 @Repository
-public interface WebSiteDao extends JpaRepository<WebSite,Long> {
+public interface WebSiteDao extends JpaRepository<WebSite, Long> {
 
     List<WebSite> findByStatutWebSiteId(Long id);
+
     int deleteByStatutWebSiteId(Long id);
+
     List<WebSite> findByClientsId(Long id);
+
     int deleteByClientsId(Long id);
 
+
+    WebSite findByUrl(String url);
 
 
 }

@@ -11,41 +11,53 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/admin/webSite/")
+@RequestMapping("api/admin/webSite")
 public class WebSiteRestAdmin {
 
-    @PostMapping("")
+    @PostMapping("/")
     public int save(@RequestBody WebSite webSite) {
         return webSiteAdminService.save(webSite);
     }
-@DeleteMapping("id/{id}")
+
+    @DeleteMapping("/id/{id}")
     @Transactional
     public void deleteAssociatedLists(@PathVariable Long id) {
         webSiteAdminService.deleteAssociatedLists(id);
     }
-@PutMapping("")
+
+    @PutMapping("/")
     public int update(@RequestBody WebSite webSite) {
         return webSiteAdminService.update(webSite);
     }
-@GetMapping("statutWebSite/id/{id}")
+
+    @GetMapping("/statutWebSite/id/{id}")
     public List<WebSite> findByStatutWebSiteId(@PathVariable Long id) {
         return webSiteAdminService.findByStatutWebSiteId(id);
     }
-@DeleteMapping("statutWebSite/id/{id}")
+
+    @DeleteMapping("/statutWebSite/id/{id}")
     public int deleteByStatutWebSiteId(@PathVariable Long id) {
         return webSiteAdminService.deleteByStatutWebSiteId(id);
     }
-@GetMapping("client/id/{id}")
+
+    @GetMapping("/client/id/{id}")
     public List<WebSite> findByClientId(@PathVariable Long id) {
         return webSiteAdminService.findByClientsId(id);
     }
-@DeleteMapping("client/id/{id}")
+
+    @DeleteMapping("/client/id/{id}")
     public int deleteByClientId(@PathVariable Long id) {
         return webSiteAdminService.deleteByClientsId(id);
     }
-@GetMapping("id/{id}")
+
+    @GetMapping("/id/{id}")
     public WebSite findById(@PathVariable Long id) {
         return webSiteAdminService.findById(id);
+    }
+
+    @GetMapping("url/{protocol}/{url}")
+    public WebSite findByUrl(@PathVariable String url, @PathVariable String protocol) {
+        return webSiteAdminService.findByUrl(url, protocol);
     }
 
     @Autowired
