@@ -84,6 +84,4 @@ public class WebSiteAdminServiceImpl implements WebSiteAdminService {
     private StatutWebSiteAdminService statutWebSiteService;
     @Autowired
     private ScrappingLinkAdminService scrappingLinkService;
-
-
 }
