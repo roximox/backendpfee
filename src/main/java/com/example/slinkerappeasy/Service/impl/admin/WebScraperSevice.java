@@ -224,7 +224,7 @@ public class WebScraperSevice  {
                     synchronized (items) {
                         items.add(item);
                     }
-                    int availbaleNbr= 0 ;
+                    /*int availbaleNbr= 0 ;
                     int unavailbaleNbr= 0 ;
                     for (Result result : items){
                         if (result.getStock().contains("in Stock")){
@@ -244,7 +244,7 @@ public class WebScraperSevice  {
                     });
                 //affectation des attribues au website
                     webSite.setLinkProcessed(produitScrapper);
-                    webSite.setDuree(duree);
+                    webSite.setDuree(duree);*/
                 } catch (IOException e) {
                     // Gérer l'exception
                 }
@@ -285,7 +285,7 @@ public class WebScraperSevice  {
                     synchronized (items) {
                         items.add(item);
                     }
-                    int availbaleNbr= 0 ;
+                   /* int availbaleNbr= 0 ;
                     int unavailbaleNbr= 0 ;
                     for (Result result : items){
                         if (result.getStock().contains("in Stock")){
@@ -305,7 +305,7 @@ public class WebScraperSevice  {
                     });
                     //affectation des attribues au website
                     webSite.setLinkProcessed(produitScrapper);
-                    webSite.setDuree(duree);
+                    webSite.setDuree(duree);*/
                 } catch (IOException e) {
                     // Gérer l'exception
                 }
