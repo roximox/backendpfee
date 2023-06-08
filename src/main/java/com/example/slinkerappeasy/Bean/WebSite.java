@@ -23,6 +23,55 @@ public class WebSite {
     @OneToMany()
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<Client> clients;
+    private int linkChecked ;
+    private int linkProcessed ;
+    private int avaibale ;
+    private int unvaibale ;
+    private long duree;
+
+    public int getUnvaibale() {
+        return unvaibale;
+    }
+
+    public void setUnvaibale(int unvaibale) {
+        this.unvaibale = unvaibale;
+    }
+
+    public int getAvaibale() {
+        return avaibale;
+    }
+
+    public void setAvaibale(int avaibale) {
+        this.avaibale = avaibale;
+    }
+
+
+
+    public long getDuree() {
+        return duree;
+    }
+
+    public void setDuree(long duree) {
+        this.duree = duree;
+    }
+
+    public int getLinkProcessed() {
+        return linkProcessed;
+    }
+
+    public void setLinkProcessed(int linkProcessed) {
+        this.linkProcessed = linkProcessed;
+    }
+
+
+
+    public int getLinkChecked() {
+        return linkChecked;
+    }
+
+    public void setLinkChecked(int linkChecked) {
+        this.linkChecked = linkChecked;
+    }
 
     @ManyToOne
     private ScrappingLink scrappingLinks;

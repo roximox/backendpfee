@@ -36,13 +36,46 @@ public class WebScraperSevice  {
             while (!executor.isTerminated()) {
                 // Attente de la fin de tous les threads
             }
+
         } catch (IOException e) {
             e.printStackTrace();
             // Gérer l'exception selon vos besoins
         }
         return extractedLinks;
     }
+    public List<String> CustomScrapeLinks(Long id, int numberOfLinks) {
+        List<String> links = new ArrayList<>();
+        WebSite webSite = webSiteAdminService.findById(id);
 
+        String url = webSite.getUrl(); // Construisez l'URL avec l'ID en tant que paramètre
+        try {
+            Document document = Jsoup.connect(url).get(); // Récupérez le document HTML de la page
+            Elements anchorTags = document.select("a[href]"); // Sélectionnez tous les éléments <a> contenant un attribut href
+
+            int count = 0;
+            for (Element anchorTag : anchorTags) {
+                if (count >= numberOfLinks) {
+                    break;
+                }
+
+                String subLink = anchorTag.attr("abs:href"); // Récupérez l'URL absolue du sous-lien
+                links.add(subLink);
+
+                count++;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return links;
+    }
+
+
+    public int linkChecked(Long id){
+        List<String> links= scrapeLinksWebsite(id);
+        int linkschecked = links.size();
+        return linkschecked;
+    }
     private void scrapePage(String pageUrl, ExecutorService executor) throws IOException {
         if (!visitedLinks.contains(pageUrl)) {
             visitedLinks.add(pageUrl);
@@ -123,10 +156,51 @@ public class WebScraperSevice  {
 
         return amazonLinks; // Convertir l'ensemble des liens Amazon identifiés en liste et la renvoyer
     }
+    public List<String> scrapeAndFilterCustomAmazonLinks(Long id, int numberOfLinks) {
+        List<String> customlinks = CustomScrapeLinks(id,numberOfLinks);
+        HashSet<String> visitedCustomLinks = new HashSet<>();
+        List<String> CustomamazonLinks = new ArrayList<>(); // Ensemble des liens Amazon identifiés
+        ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
+        for (String link : customlinks) {
+            if (visitedCustomLinks.contains(link)) {
+                continue; // Si le lien a déjà été visité, passer à l'itération suivante
+            }
+            visitedCustomLinks.add(link); // Ajouter le lien visité à l'ensemble des liens visités
+            executor.execute(() -> {
+                try {
+                    Connection connection = Jsoup.connect(link);
+                    Document document = connection.get();
+                    Elements pageLinks = document.select("a[href]"); // Récupérer tous les liens de la page
+                    List<String> batchCustomLinks = new ArrayList<>();
+                    for (Element CustomPageLink : pageLinks) {
+                        String linkUrl = CustomPageLink.absUrl("href");
+                        if (linkUrl.isEmpty() || visitedCustomLinks.contains(linkUrl)) {
+                            continue; // Si le lien est vide ou a déjà été visité, passer à l'itération suivante
+                        }
+                        if (linkUrl.contains("amazon") || linkUrl.contains("amzn")) {
+                            batchCustomLinks.add(linkUrl); // Si le lien pointe vers Amazon, l'ajouter à l'ensemble des liens Amazon identifiés
+                        }
+                    }
+                    synchronized (CustomamazonLinks) {
+                        CustomamazonLinks.addAll(batchCustomLinks);
+                    }
+                } catch (IOException e) {
+                    // Gérer l'exception
+                }
+            });
+        }
+
+        executor.shutdown();
+        while (!executor.isTerminated()) {
+            // Attente de la fin de tous les threads
+        }
+
+        return CustomamazonLinks; // Convertir l'ensemble des liens Amazon identifiés en liste et la renvoyer
+    }
     public List<Result> AmazonProducts(Long id) {
         List<String> amazonLinks = scrapeAndFilterAmazonLinks(id);
         List<Result> items = new ArrayList<>(); // Liste des objets ScrapingOperationItem
-
+        WebSite webSite = webSiteAdminService.findById(id);
         ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
 
         for (String link : amazonLinks) {
@@ -150,6 +224,88 @@ public class WebScraperSevice  {
                     synchronized (items) {
                         items.add(item);
                     }
+                    int availbaleNbr= 0 ;
+                    int unavailbaleNbr= 0 ;
+                    for (Result result : items){
+                        if (result.getStock().contains("in Stock")){
+                            availbaleNbr++;
+                        }
+                        else if (result.getStock().contains("unvaibale")){
+                            unavailbaleNbr++;
+                        }
+                        else {
+
+                        }
+                    }
+                    int produitScrapper = items.size();
+                    long duree = executerEtChronometrer(() -> {
+                        // Appeler la méthode que je souhaite chronométrer ici
+                        AmazonProducts(id);
+                    });
+                //affectation des attribues au website
+                    webSite.setLinkProcessed(produitScrapper);
+                    webSite.setDuree(duree);
+                } catch (IOException e) {
+                    // Gérer l'exception
+                }
+            });
+        }
+
+        executor.shutdown();
+        while (!executor.isTerminated()) {
+            // Attente de la fin de tous les threads
+        }
+
+        return  items; // Renvoyer la liste des objets ScrapingOperationItem
+    }
+    public List<Result> AmazonCustomProducts(Long id, int nbrPage) {
+        List<String> amazonLinks = scrapeAndFilterCustomAmazonLinks(id,nbrPage);
+        List<Result> items = new ArrayList<>(); // Liste des objets ScrapingOperationItem
+        WebSite webSite = webSiteAdminService.findById(id);
+        ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
+
+        for (String link : amazonLinks) {
+            executor.execute(() -> {
+                try {
+                    Connection connection = Jsoup.connect(link);
+                    Document document = connection.get();
+                    Element product = document.selectFirst("#ppd");
+                    String title = product.select("#productTitle").text(); // Récupérer le titre du produit
+                    String stock = product.select("#availability").text(); // Récupérer le stock du produit
+                    String rating = product.select(".a-icon-alt").text(); // Récupérer le rating du produit
+                    String imageUrl = product.select("img").attr("src");
+                    String prix = product.select("div#corePrice_feature_div span.a-price-whole").text();
+                    BigDecimal Prixdecimal = new BigDecimal(prix);
+                    Result item = new Result();// Créer un objet ScrapingOperationItem avec les informations récupérées
+                    item.setDescription(title);
+                    item.setStock(stock);
+                    item.setReview(rating);
+                    item.setImage(imageUrl);
+                    item.setPrix(Prixdecimal );
+                    synchronized (items) {
+                        items.add(item);
+                    }
+                    int availbaleNbr= 0 ;
+                    int unavailbaleNbr= 0 ;
+                    for (Result result : items){
+                        if (result.getStock().contains("in Stock")){
+                            availbaleNbr++;
+                        }
+                        else if (result.getStock().contains("unvaibale")){
+                            unavailbaleNbr++;
+                        }
+                        else {
+
+                        }
+                    }
+                    int produitScrapper = items.size();
+                    long duree = executerEtChronometrer(() -> {
+                        // Appeler la méthode que je souhaite chronométrer ici
+                        AmazonProducts(id);
+                    });
+                    //affectation des attribues au website
+                    webSite.setLinkProcessed(produitScrapper);
+                    webSite.setDuree(duree);
                 } catch (IOException e) {
                     // Gérer l'exception
                 }
@@ -167,6 +323,17 @@ public class WebScraperSevice  {
     private boolean isValidLink (String link){
         // Ajoutez ici des conditions supplémentaires pour ignorer les liens erronés
         return link != null && !link.isEmpty() && !link.startsWith("mailto:") && !link.contains("pinterest")&& !link.contains("instagram")&& !link.contains("youtube")&& !link.contains("tiktok")&& !link.contains("twiter")&& !link.contains("facebook")&& !link.contains("menu");
+    }
+    public long executerEtChronometrer(Runnable AmazonProducts) {
+        long debut = System.nanoTime();
+
+        // Appeler la méthode que vous souhaitez chronométrer
+        AmazonProducts.run();
+
+        long fin = System.nanoTime();
+        long duree = fin - debut;
+        return duree;
+
     }
     @Autowired
     private WebSiteAdminServiceImpl webSiteAdminService;

@@ -20,7 +20,15 @@ public class SubscriptionPack  {
     @Column(length = 500)
     private String libelle;
     private BigDecimal prix = BigDecimal.ZERO;
+    private int nbrPage;
 
+    public int getNbrPage() {
+        return nbrPage;
+    }
+
+    public void setNbrPage(int nbrPage) {
+        this.nbrPage = nbrPage;
+    }
 
     public Long getId() {
         return id;
