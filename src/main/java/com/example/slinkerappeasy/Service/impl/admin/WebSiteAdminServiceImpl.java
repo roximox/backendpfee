@@ -70,8 +70,7 @@ public class WebSiteAdminServiceImpl implements WebSiteAdminService {
 
     @Override
     public WebSite findByUrl(String url, String protocol) {
-        url = protocol +"//" + url;
-        System.out.println(url);
+        url = protocol +"://" + url;
         if (webSiteDao.findByUrl(url) == null) {
             return null;
         }
@@ -85,6 +84,4 @@ public class WebSiteAdminServiceImpl implements WebSiteAdminService {
     private StatutWebSiteAdminService statutWebSiteService;
     @Autowired
     private ScrappingLinkAdminService scrappingLinkService;
-
-
 }

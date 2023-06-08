@@ -312,11 +312,13 @@ public class WebScraperSevice  {
             });
         }
 
+
         executor.shutdown();
         while (!executor.isTerminated()) {
             // Attente de la fin de tous les threads
         }
 
+        System.out.println("Finish");
         return  items; // Renvoyer la liste des objets ScrapingOperationItem
     }
 
