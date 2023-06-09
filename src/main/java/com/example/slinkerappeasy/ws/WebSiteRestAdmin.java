@@ -60,6 +60,11 @@ public class WebSiteRestAdmin {
         return webSiteAdminService.findByUrl(url, protocol);
     }
 
+    @GetMapping("/get-all")
+    public List<WebSite> findAll() {
+        return webSiteAdminService.findAll();
+    }
+
     @Autowired
     public WebSiteAdminServiceImpl webSiteAdminService;
 }

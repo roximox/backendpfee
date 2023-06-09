@@ -34,14 +34,20 @@ public class WebScraperRestAdmin {
     public List<String> scrapeAndFilterAmazonLinks(@PathVariable Long id) {
         return webScraperSevice.scrapeAndFilterAmazonLinks(id);
     }
+//    @GetMapping("id/{id}")
+//    public List<Result> AmazonProducts(@PathVariable Long id) {
+//        return webScraperSevice.AmazonProducts(id);
+//    }
+//    @GetMapping("AmazonCustomProducts/{id}")
+//    public List<Result> AmazonCustomProducts(@PathVariable Long id,@RequestParam int nbrPage) {
+//        return webScraperSevice.AmazonCustomProducts(id, nbrPage);
+//    }
+
     @GetMapping("id/{id}")
     public List<Result> AmazonProducts(@PathVariable Long id) {
         return webScraperSevice.AmazonProducts(id);
     }
-    @GetMapping("AmazonCustomProducts/{id}")
-    public List<Result> AmazonCustomProducts(@PathVariable Long id,@RequestParam int nbrPage) {
-        return webScraperSevice.AmazonCustomProducts(id, nbrPage);
-    }
+
 
     @Autowired
     private WebScraperSevice webScraperSevice;

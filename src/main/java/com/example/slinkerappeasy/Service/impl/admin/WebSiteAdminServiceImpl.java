@@ -77,6 +77,9 @@ public class WebSiteAdminServiceImpl implements WebSiteAdminService {
         return webSiteDao.findByUrl(url);
     }
 
+    public List<WebSite> findAll() {
+        return webSiteDao.findAll();
+    }
 
     @Autowired
     private ClientAdminService clientService;

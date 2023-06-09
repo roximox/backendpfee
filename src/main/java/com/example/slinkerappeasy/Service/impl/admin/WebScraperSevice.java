@@ -10,6 +10,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -20,7 +21,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 @Service
-public class WebScraperSevice  {
+public class WebScraperSevice {
     private Set<String> visitedLinks;
     private List<String> extractedLinks;
     private static final int THREAD_POOL_SIZE = 10;
@@ -43,6 +44,7 @@ public class WebScraperSevice  {
         }
         return extractedLinks;
     }
+
     public List<String> CustomScrapeLinks(Long id, int numberOfLinks) {
         List<String> links = new ArrayList<>();
         WebSite webSite = webSiteAdminService.findById(id);
@@ -71,11 +73,12 @@ public class WebScraperSevice  {
     }
 
 
-    public int linkChecked(Long id){
-        List<String> links= scrapeLinksWebsite(id);
+    public int linkChecked(Long id) {
+        List<String> links = scrapeLinksWebsite(id);
         int linkschecked = links.size();
         return linkschecked;
     }
+
     private void scrapePage(String pageUrl, ExecutorService executor) throws IOException {
         if (!visitedLinks.contains(pageUrl)) {
             visitedLinks.add(pageUrl);
@@ -156,8 +159,9 @@ public class WebScraperSevice  {
 
         return amazonLinks; // Convertir l'ensemble des liens Amazon identifiés en liste et la renvoyer
     }
+
     public List<String> scrapeAndFilterCustomAmazonLinks(Long id, int numberOfLinks) {
-        List<String> customlinks = CustomScrapeLinks(id,numberOfLinks);
+        List<String> customlinks = CustomScrapeLinks(id, numberOfLinks);
         HashSet<String> visitedCustomLinks = new HashSet<>();
         List<String> CustomamazonLinks = new ArrayList<>(); // Ensemble des liens Amazon identifiés
         ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
@@ -197,6 +201,70 @@ public class WebScraperSevice  {
 
         return CustomamazonLinks; // Convertir l'ensemble des liens Amazon identifiés en liste et la renvoyer
     }
+
+    // Amazon products
+    //    public List<Result> AmazonProducts(Long id) {
+//        List<String> amazonLinks = scrapeAndFilterAmazonLinks(id);
+//        List<Result> items = new ArrayList<>(); // Liste des objets ScrapingOperationItem
+//        WebSite webSite = webSiteAdminService.findById(id);
+//        ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
+//
+//        for (String link : amazonLinks) {
+//            executor.execute(() -> {
+//                try {
+//                    Connection connection = Jsoup.connect(link);
+//                    Document document = connection.get();
+//                    Element product = document.selectFirst("#ppd");
+//                    String title = product.select("#productTitle").text(); // Récupérer le titre du produit
+//                    String stock = product.select("#availability").text(); // Récupérer le stock du produit
+//                    String rating = product.select(".a-icon-alt").text(); // Récupérer le rating du produit
+//                    String imageUrl = product.select("img").attr("src");
+//                    String prix = product.select("div#corePrice_feature_div span.a-price-whole").text();
+//                    BigDecimal Prixdecimal = new BigDecimal(prix);
+//                    Result item = new Result();// Créer un objet ScrapingOperationItem avec les informations récupérées
+//                    item.setDescription(title);
+//                    item.setStock(stock);
+//                    item.setReview(rating);
+//                    item.setImage(imageUrl);
+//                    item.setPrix(Prixdecimal );
+//                    synchronized (items) {
+//                        items.add(item);
+//                    }
+//                    /*int availbaleNbr= 0 ;
+//                    int unavailbaleNbr= 0 ;
+//                    for (Result result : items){
+//                        if (result.getStock().contains("in Stock")){
+//                            availbaleNbr++;
+//                        }
+//                        else if (result.getStock().contains("unvaibale")){
+//                            unavailbaleNbr++;
+//                        }
+//                        else {
+//
+//                        }
+//                    }
+//                    int produitScrapper = items.size();
+//                    long duree = executerEtChronometrer(() -> {
+//                        // Appeler la méthode que je souhaite chronométrer ici
+//                        AmazonProducts(id);
+//                    });
+//                //affectation des attribues au website
+//                    webSite.setLinkProcessed(produitScrapper);
+//                    webSite.setDuree(duree);*/
+//                } catch (IOException e) {
+//                    // Gérer l'exception
+//                }
+//            });
+//        }
+//
+//        executor.shutdown();
+//        while (!executor.isTerminated()) {
+//            // Attente de la fin de tous les threads
+//        }
+//
+//        return  items; // Renvoyer la liste des objets ScrapingOperationItem
+//    }
+
     public List<Result> AmazonProducts(Long id) {
         List<String> amazonLinks = scrapeAndFilterAmazonLinks(id);
         List<Result> items = new ArrayList<>(); // Liste des objets ScrapingOperationItem
@@ -220,46 +288,30 @@ public class WebScraperSevice  {
                     item.setStock(stock);
                     item.setReview(rating);
                     item.setImage(imageUrl);
-                    item.setPrix(Prixdecimal );
+                    item.setPrix(Prixdecimal);
                     synchronized (items) {
                         items.add(item);
                     }
-                    /*int availbaleNbr= 0 ;
-                    int unavailbaleNbr= 0 ;
-                    for (Result result : items){
-                        if (result.getStock().contains("in Stock")){
-                            availbaleNbr++;
-                        }
-                        else if (result.getStock().contains("unvaibale")){
-                            unavailbaleNbr++;
-                        }
-                        else {
-
-                        }
-                    }
-                    int produitScrapper = items.size();
-                    long duree = executerEtChronometrer(() -> {
-                        // Appeler la méthode que je souhaite chronométrer ici
-                        AmazonProducts(id);
-                    });
-                //affectation des attribues au website
-                    webSite.setLinkProcessed(produitScrapper);
-                    webSite.setDuree(duree);*/
                 } catch (IOException e) {
                     // Gérer l'exception
                 }
             });
         }
 
+
         executor.shutdown();
         while (!executor.isTerminated()) {
             // Attente de la fin de tous les threads
         }
 
-        return  items; // Renvoyer la liste des objets ScrapingOperationItem
+        webSite.setLinkChecked(linkChecked(id));
+
+        System.out.println("Finish");
+        return items; // Renvoyer la liste des objets ScrapingOperationItem
     }
+
     public List<Result> AmazonCustomProducts(Long id, int nbrPage) {
-        List<String> amazonLinks = scrapeAndFilterCustomAmazonLinks(id,nbrPage);
+        List<String> amazonLinks = scrapeAndFilterCustomAmazonLinks(id, nbrPage);
         List<Result> items = new ArrayList<>(); // Liste des objets ScrapingOperationItem
         WebSite webSite = webSiteAdminService.findById(id);
         ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
@@ -281,7 +333,7 @@ public class WebScraperSevice  {
                     item.setStock(stock);
                     item.setReview(rating);
                     item.setImage(imageUrl);
-                    item.setPrix(Prixdecimal );
+                    item.setPrix(Prixdecimal);
                     synchronized (items) {
                         items.add(item);
                     }
@@ -319,13 +371,14 @@ public class WebScraperSevice  {
         }
 
         System.out.println("Finish");
-        return  items; // Renvoyer la liste des objets ScrapingOperationItem
+        return items; // Renvoyer la liste des objets ScrapingOperationItem
     }
 
-    private boolean isValidLink (String link){
+    private boolean isValidLink(String link) {
         // Ajoutez ici des conditions supplémentaires pour ignorer les liens erronés
-        return link != null && !link.isEmpty() && !link.startsWith("mailto:") && !link.contains("pinterest")&& !link.contains("instagram")&& !link.contains("youtube")&& !link.contains("tiktok")&& !link.contains("twiter")&& !link.contains("facebook")&& !link.contains("menu");
+        return link != null && !link.isEmpty() && !link.startsWith("mailto:") && !link.contains("pinterest") && !link.contains("instagram") && !link.contains("youtube") && !link.contains("tiktok") && !link.contains("twiter") && !link.contains("facebook") && !link.contains("menu");
     }
+
     public long executerEtChronometrer(Runnable AmazonProducts) {
         long debut = System.nanoTime();
 
@@ -337,6 +390,7 @@ public class WebScraperSevice  {
         return duree;
 
     }
+
     @Autowired
     private WebSiteAdminServiceImpl webSiteAdminService;
 }

@@ -23,4 +23,5 @@ public interface WebSiteDao extends JpaRepository<WebSite, Long> {
     WebSite findByUrl(String url);
 
 
+    List<WebSite> findAll();
 }
