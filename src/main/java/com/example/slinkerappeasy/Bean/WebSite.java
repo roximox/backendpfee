@@ -10,7 +10,7 @@ import java.util.List;
 @Entity
 public class WebSite {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     @Column(length = 500)
     private String url;
@@ -23,10 +23,10 @@ public class WebSite {
     @OneToMany()
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<Client> clients;
-    private int linkChecked ;
-    private int linkProcessed ;
-    private int avaibale ;
-    private int unvaibale ;
+    private int linkChecked;
+    private int linkProcessed;
+    private int avaibale;
+    private int unvaibale;
     private long duree;
 
     public int getUnvaibale() {
@@ -46,7 +46,6 @@ public class WebSite {
     }
 
 
-
     public long getDuree() {
         return duree;
     }
@@ -62,7 +61,6 @@ public class WebSite {
     public void setLinkProcessed(int linkProcessed) {
         this.linkProcessed = linkProcessed;
     }
-
 
 
     public int getLinkChecked() {

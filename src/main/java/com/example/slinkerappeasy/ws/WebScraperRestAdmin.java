@@ -16,6 +16,7 @@ public class WebScraperRestAdmin {
     public List<String> scrapeLinksWebsite(@PathVariable Long id) {
         return webScraperSevice.scrapeLinksWebsite(id);
     }
+
     @GetMapping("scrapeAndFilterCustomAmazonLinks/{id}")
     public List<String> scrapeAndFilterCustomAmazonLinks(@PathVariable Long id,@RequestParam int nbrPage) {
         return webScraperSevice.scrapeAndFilterCustomAmazonLinks(id, nbrPage);
